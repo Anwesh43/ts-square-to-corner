@@ -1,9 +1,13 @@
 const w : number = window.innerWidth, h : number = window.innerHeight, size : number = Math.min(w, h)/3
 class SquareToCornerStage {
 
-    canvas : HTMLCanvasElement = document.createElement('canvas')
+    private canvas : HTMLCanvasElement = document.createElement('canvas')
 
-    context : CanvasRenderingContext2D
+    private context : CanvasRenderingContext2D
+
+    private squareContainer : SquareContainer = new SquareContainer()
+
+    private animator : Animator = new Animator()
 
     constructor() {
         this.initCanvas()
@@ -19,11 +23,19 @@ class SquareToCornerStage {
     render() {
         this.context.fillStyle = '#212121'
         this.context.fillRect(0, 0, w, h)
+        this.squareContainer.draw(this.context)
     }
 
     handleTap() {
         this.canvas.onmousedown = () => {
-
+            this.squareContainer.startUpdating(() => {
+                this.animator.start(() => {
+                    this.render()
+                    this.squareContainer.update(() => {
+                        this.animator.stop()
+                    })
+                })
+            })
         }
     }
 }
@@ -87,9 +99,9 @@ class Square {
     }
 
     draw(context : CanvasRenderingContext2D) {
-        const a : number  = (size)/9, x : number = ((i%3)-1) * (a), y : number = (Math.floor(i/3) - 1) * a
+        const a : number  = (size)/9, x : number = ((this.i%3)-1) * (a), y : number = (Math.floor(this.i/3) - 1) * a
         context.fillStyle = '#ecf0f1'
-        context.fillRect(x * this.state.scale, y * state.scale, a, a)
+        context.fillRect(x * this.state.scale, y * this.state.scale, a, a)
     }
 
     update(stopcb : Function) {
@@ -122,7 +134,7 @@ class ContainerState {
 
 class SquareContainer {
 
-    private state : ContainerState = ContainerState(9)
+    private state : ContainerState = new ContainerState(9)
 
     private squares : Array<Square> = []
 
@@ -143,16 +155,16 @@ class SquareContainer {
     }
 
     update(stopcb : Function) {
-        this.state.execute(() => {
-            this.squares[this.j].update(() => {
-                this.state.incrementCounter()
+        this.state.execute((j) => {
+            this.squares[j].update(() => {
+                this.state.incrementCounter(stopcb)
             })
         })
     }
 
     startUpdating(startcb : Function) {
-        this.state.execute(() => {
-            this.squares[this.j].startUpdating(startcb)
+        this.state.execute((j) => {
+            this.squares[j].startUpdating(startcb)
         })
     }
 }
