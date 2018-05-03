@@ -168,3 +168,9 @@ class SquareContainer {
         })
     }
 }
+
+const initSquareToCorner : Function = () => {
+    const squareToCornerStage : SquareToCornerStage = new SquareToCornerStage()
+    squareToCornerStage.render()
+    squareToCornerStage.handleTap()
+}
