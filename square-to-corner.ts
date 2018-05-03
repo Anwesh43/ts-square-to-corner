@@ -1,4 +1,4 @@
-const w : number = window.innerWidth, h : number = window.innerHeight, size : number = Math.min(w, h)/3
+const w : number = window.innerWidth, h : number = window.innerHeight, size : number = 2 * Math.min(w, h)/3
 class SquareToCornerStage {
 
     private canvas : HTMLCanvasElement = document.createElement('canvas')
@@ -84,7 +84,7 @@ class Animator {
 
     stop() {
         if (this.animated) {
-            this.animated = true
+            this.animated = false
             clearInterval(this.interval)
         }
     }
@@ -99,9 +99,9 @@ class Square {
     }
 
     draw(context : CanvasRenderingContext2D) {
-        const a : number  = (size)/9, x : number = ((this.i%3)-1) * (a), y : number = (Math.floor(this.i/3) - 1) * a
+        const a : number  = (size)/3, x : number = ((this.i%3)-1) * (a), y : number = (Math.floor(this.i/3) - 1) * a
         context.fillStyle = '#ecf0f1'
-        context.fillRect(x * this.state.scale, y * this.state.scale, a, a)
+        context.fillRect(x * this.state.scale, y * this.state.scale, a/10, a/10)
     }
 
     update(stopcb : Function) {
@@ -123,6 +123,8 @@ class ContainerState {
     incrementCounter(stopcb : Function) {
         this.j += this.dir
         if (this.j == this.n || this.j == -1) {
+            this.dir *= -1
+            this.j += this.dir
             stopcb()
         }
     }
@@ -149,9 +151,12 @@ class SquareContainer {
     }
 
     draw(context : CanvasRenderingContext2D) {
+        context.save()
+        context.translate(w/2, h/2)
         this.squares.forEach((square) => {
             square.draw(context)
         })
+        context.restore()
     }
 
     update(stopcb : Function) {
