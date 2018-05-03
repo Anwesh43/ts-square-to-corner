@@ -99,5 +99,19 @@ class Square {
     startUpdating(startcb : Function) {
         this.state.startUpdating(startcb)
     }
+}
 
+class ContainerState {
+    j : number = 0
+    dir : number = 1
+    constructor(private n : number) {
+
+    }
+
+    incrementCounter(stopcb : Function) {
+        this.j += this.dir
+        if (this.j == this.n || this.j == -1) {
+            stopcb()
+        }
+    }
 }
