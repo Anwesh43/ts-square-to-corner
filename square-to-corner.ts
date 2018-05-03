@@ -77,3 +77,27 @@ class Animator {
         }
     }
 }
+
+class Square {
+
+    state : State = new State()
+
+    constructor(private i : number){
+
+    }
+
+    draw(context : CanvasRenderingContext2D) {
+        const a : number  = (size)/6, x : number = ((i%3)-1) * (a), y : number = (Math.floor(i/3) - 1) * a
+        context.fillStyle = '#ecf0f1'
+        context.fillRect(x * this.state.scale, y * state.scale, a, a)
+    }
+
+    update(stopcb : Function) {
+        this.state.update(stopcb)
+    }
+
+    startUpdating(startcb : Function) {
+        this.state.startUpdating(startcb)
+    }
+
+}
