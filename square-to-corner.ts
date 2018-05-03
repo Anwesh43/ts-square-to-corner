@@ -87,7 +87,7 @@ class Square {
     }
 
     draw(context : CanvasRenderingContext2D) {
-        const a : number  = (size)/6, x : number = ((i%3)-1) * (a), y : number = (Math.floor(i/3) - 1) * a
+        const a : number  = (size)/9, x : number = ((i%3)-1) * (a), y : number = (Math.floor(i/3) - 1) * a
         context.fillStyle = '#ecf0f1'
         context.fillRect(x * this.state.scale, y * state.scale, a, a)
     }
@@ -102,8 +102,8 @@ class Square {
 }
 
 class ContainerState {
-    j : number = 0
-    dir : number = 1
+    private j : number = 0
+    private dir : number = 1
     constructor(private n : number) {
 
     }
@@ -113,5 +113,46 @@ class ContainerState {
         if (this.j == this.n || this.j == -1) {
             stopcb()
         }
+    }
+
+    execute(cb : Function) {
+        cb(this.j)
+    }
+}
+
+class SquareContainer {
+
+    private state : ContainerState = ContainerState(9)
+
+    private squares : Array<Square> = []
+
+    constructor() {
+        this.initSquares()
+    }
+
+    initSquares() {
+        for (var i = 0; i < 9; i++) {
+            this.squares.push(new Square(i))
+        }
+    }
+
+    draw(context : CanvasRenderingContext2D) {
+        this.squares.forEach((square) => {
+            square.draw(context)
+        })
+    }
+
+    update(stopcb : Function) {
+        this.state.execute(() => {
+            this.squares[this.j].update(() => {
+                this.state.incrementCounter()
+            })
+        })
+    }
+
+    startUpdating(startcb : Function) {
+        this.state.execute(() => {
+            this.squares[this.j].startUpdating(startcb)
+        })
     }
 }
